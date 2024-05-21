@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('image_url');
             $table->float('price');
             $table->string('description');
+            $table->boolean('disabled')->default(false); // Para no hacer un delete directamente
             $table->timestamps();
         });
     }

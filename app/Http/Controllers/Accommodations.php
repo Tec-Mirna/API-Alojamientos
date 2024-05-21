@@ -18,11 +18,23 @@ class Accommodations extends Controller
     /* Obtner todos */
     // http://localhost:8000/api/v1/accomodation/all
     public function accomodations(){
+        
+        // Obtén los registros donde el campo 'disabled' sea false= 0
+       $accomodation = Accomodation::where('disabled', false)->get();
+        
+        if ($accomodation->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No accommodations found',
+                'data' => []
+            ]); //No Content (Solicitud exitosa pero no hay contenido)
+        }
 
-        $accomodation = Accomodation::all(); /* SELECT * FROM [nombre_tabla] */
+        
+        //$accomodation = Accomodation::all(); /* SELECT * FROM [nombre_tabla] */
         return response()->json([
             'status' => true,
-            'message' => 'Get all accomodations successfully',
+            'message' => 'Get all accommodations successfully',
             'data' => $accomodation
         ]);
     }
@@ -32,7 +44,16 @@ class Accommodations extends Controller
     // http://localhost:8000/api/v1/accomodation/id
     public function accomodation($id){
 
-        $accomodation = Accomodation::find($id); /* Obtener 1 por id */
+        $accomodation = Accomodation::find($id);
+
+        // No mostrar si el registro ha sido eliminado
+        if($accomodation->disabled){
+           return response()->json([
+                    'status' => false,
+                    'message' => 'Accomodation with id ' . $id . ' Not found',
+                    'data' => 'not data'
+            ], 404); /* Responde mal */ 
+        }
 
         /* Validaciones   */
         // Si el id no existe 
@@ -58,6 +79,10 @@ class Accommodations extends Controller
      // { "name": "The Grand Hotel", "address": "123 Main Street, City, Country", "capacity": 100, "rooms": 50, "image_url": "http://example.com/image.jpg", "price": 100.00, "description": "A luxurious hotel in the heart of the city." 
 
     public function createAccomodation(Request $request){ 
+
+       if($request->)
+
+
         /* Donde el nombre sea igual a request name */
        $accomodationDatabase = Accomodation::where('name', $request->name)->first(); // Si esta consulta encuentra un registro con el mismo nombre, error
        
@@ -114,13 +139,35 @@ class Accommodations extends Controller
           ], 404);
         }
 
-       $accomodation->delete();
+     /* $accomodation->delete(); */
+       $accomodation->update(['disabled' => true]);
 
         return response()->json([
             'status' =>  true,
-            'message' => 'Accomodation with id' . $id . 'deleted.',
+            'message' => 'Accomodation with id ' . $id . ' deleted.',
+            'data' => $accomodation
+        ], 200);
+    }    
+
+   // SIMILAR A PUT PERO MANDAMOS SOLO LO QUE VAMOS A MODIFICAR EN LUGAR DE ENVIAR TODO EL OBJ COMO LO HACE PUT
+   // { "name": "nuevo nombre"}
+    function patchAccomodation(Request $request, $id){
+        $accomodation = Accomodation::find($id);
+        if(!$accomodation){
+          return response()->json([
+             'status' =>  false,
+             'message' => ' accomodation not found',
+             'data' => 'Not data'
+          ], 404);
+        }
+
+        $accomodation->update($request->all()); //Todo lo que mando mete en request
+
+        return response()->json([
+            'status' =>  true,
+            'message' => 'Update accomodation with id',
             'data' => $accomodation
         ]);
-    }    
+    }
        
 }

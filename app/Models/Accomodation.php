@@ -9,6 +9,7 @@ class Accomodation extends Model
 {
     use HasFactory;
 
+    // desde el controlador solo pueda tocar estos atributos
     protected $fillable = [
         'name',
         'address',
@@ -16,6 +17,7 @@ class Accomodation extends Model
         'rooms',
         'image_url',
         'price',
-        'description'
+        'description',
+        'disabled',
     ];
 }

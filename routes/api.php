@@ -24,3 +24,6 @@ Route::put('/accomodation/{id}', [Accommodations::class, 'updateAccomodation']);
 
 /* Método de eliminar */
 Route::delete('/accomodation/{id}', [Accommodations::class, 'deleteAccomodation']);
+
+
+Route::patch('/accomodation/{id}', [Accommodations::class, 'patchAccomodation']);
