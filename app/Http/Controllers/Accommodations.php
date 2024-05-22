@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Accomodation;
+use Illuminate\Support\Facades\Validator;
 
 class Accommodations extends Controller
 {
@@ -80,7 +81,24 @@ class Accommodations extends Controller
 
     public function createAccomodation(Request $request){ 
 
-       if($request->)
+     // Todos los datos deben ser requeridos
+      $validator = Validator::make($request->all(), [
+          'name' => 'required',
+          'address' => 'required',
+          'capacity' => 'required',
+          'rooms' => 'required',
+          'image_url' => 'required',
+          'price' => 'required',
+          'description' => 'required',
+      ]);
+       // verdadero si hay error y falso si es correcto
+      if($validator->fails()){
+        return response()->json([
+            'status' =>  false, 
+            'message' => 'Validation error',
+            'data' => $validator->errors()
+        ], 409); // conflicto
+      }
 
 
         /* Donde el nombre sea igual a request name */
@@ -149,7 +167,7 @@ class Accommodations extends Controller
         ], 200);
     }    
 
-   // SIMILAR A PUT PERO MANDAMOS SOLO LO QUE VAMOS A MODIFICAR EN LUGAR DE ENVIAR TODO EL OBJ COMO LO HACE PUT
+   // SIMILAR A PUT PERO MANDAMOS SOLO LO QUE VAMOS A MODIFICAR EN LUGAR DE ENVIAR TODO EL JSON COMO LO HACE PUT
    // { "name": "nuevo nombre"}
     function patchAccomodation(Request $request, $id){
         $accomodation = Accomodation::find($id);
