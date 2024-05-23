@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Accomodation;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\AccomodationRequest; // importación del archivo con las validaciones
 
 class Accommodations extends Controller
 {
@@ -79,10 +80,15 @@ class Accommodations extends Controller
      // http://localhost:8000/api/v1/accomodation/
      // { "name": "The Grand Hotel", "address": "123 Main Street, City, Country", "capacity": 100, "rooms": 50, "image_url": "http://example.com/image.jpg", "price": 100.00, "description": "A luxurious hotel in the heart of the city." 
 
-    public function createAccomodation(Request $request){ 
 
+        // ya no es de tipo request sino de tipo AccomodationRequest
+    public function createAccomodation(AccomodationRequest $request){ 
+
+     
+
+        // EN  REQUEST TODAS LAS VALIDACIONES
      // Todos los datos deben ser requeridos
-      $validator = Validator::make($request->all(), [
+     /*  $validator = Validator::make($request->all(), [
           'name' => 'required',
           'address' => 'required',
           'capacity' => 'required',
@@ -90,15 +96,15 @@ class Accommodations extends Controller
           'image_url' => 'required',
           'price' => 'required',
           'description' => 'required',
-      ]);
+      ]); */
        // verdadero si hay error y falso si es correcto
-      if($validator->fails()){
+     /*  if($validator->fails()){
         return response()->json([
             'status' =>  false, 
             'message' => 'Validation error',
             'data' => $validator->errors()
         ], 409); // conflicto
-      }
+      } */
 
 
         /* Donde el nombre sea igual a request name */
@@ -111,8 +117,20 @@ class Accommodations extends Controller
                 'data' => 'Not data'
             ], 409); // conflicto
         } 
-                                   // Con request all guradamos todo(atributos)
-        $accomodation = Accomodation::create($request->all()); /* INSERT INTO */
+
+        // Error de la base de datos
+          try{                                // Con request all guradamos todo(atributos)
+            $accomodation = Accomodation::create($request->all()); /* INSERT INTO */
+          }catch(\Exception $e){
+            return response()->json([
+                'status' =>  false,
+                'message' => 'Error creating accomodation',
+                'data' => $e->getMessage()
+            ], 500); 
+          }
+
+                                  
+ 
         return response()->json([
             'status' =>  true,
             'message' => 'New ccomodation created',
