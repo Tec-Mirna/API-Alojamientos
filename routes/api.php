@@ -11,25 +11,31 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/test', [Accommodations::class, 'test']);
 
-/* Traer todos los acommodations */
-Route::get('/accomodation/all', [Accommodations::class, 'accomodations']);
-
-/* Traer por id */
-Route::get('/accomodation/{id}', [Accommodations::class, 'accomodation']);
-
-/* Método POST */
-Route::post('/accomodation', [Accommodations::class, 'createAccomodation']);
-
-/* Método edit */
-Route::put('/accomodation/{id}', [Accommodations::class, 'updateAccomodation']);
-
-/* Método de eliminar */
-Route::delete('/accomodation/{id}', [Accommodations::class, 'deleteAccomodation']);
 
 
-Route::patch('/accomodation/{id}', [Accommodations::class, 'patchAccomodation']);
+// TODAS SON RUTAS PROTEGIDAS
+Route::middleware('auth:sanctum')->group(function () {
+
+    /* Traer todos los acommodations */
+    Route::get('/accomodation/all', [Accommodations::class, 'accomodations']);
+    
+    /* Traer por id */
+    Route::get('/accomodation/{id}', [Accommodations::class, 'accomodation']);
+    
+    /* Método POST */                                                         
+    Route::post('/accomodation', [Accommodations::class, 'createAccomodation']);
+    
+    /* Método edit */
+    Route::put('/accomodation/{id}', [Accommodations::class, 'updateAccomodation']);
+    
+    /* Método de eliminar */
+    Route::delete('/accomodation/{id}', [Accommodations::class, 'deleteAccomodation']);
+    
+    
+    Route::patch('/accomodation/{id}' , [Accommodations::class, 'patchAccomodation']);
+});
 
 //Autenticacion de usuarios
 Route::post('/register', [AuthenticationController::class, 'register']);
-Route::post('/login', [AuthenticationController::class, 'login']);
+Route::post('/login', [AuthenticationController::class, 'login'])->name('login');
 
